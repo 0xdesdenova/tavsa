@@ -6,7 +6,7 @@ from genetic_algorithm import solution
 # Create your views here.
 def solve(request):
     yield 'Started'
-    yield solution.main(request.data['num_of_vehicles'], request.data['atm_list'], request.data['date'])
+    yield solution.main(request.data['date'], request.data['population'], request.data['generations'], request.data['num_of_vehicles'], request.data['atm_list'])
     yield 'Finished'
 
 

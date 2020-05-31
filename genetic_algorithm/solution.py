@@ -22,10 +22,9 @@ problem_name = "tavsa"
 depot_location = 0
 
 # Genetic Algorithm constants:
-population_size = 100
+
 crossover_probability = 0.9  # probability for crossover
 mutation_probability = 0.2  # probability for mutating an individual
-number_of_generations = 100
 hall_of_fame_size = 30
 
 
@@ -69,7 +68,9 @@ def init_vrp(num_of_vehicles, atm_list):
 
 
 # Genetic Algorithm flow:
-def main(num_of_vehicles, atm_list, date):
+def main(population_size, number_of_generations, num_of_vehicles, atm_list, date):
+    population_size = population_size
+    number_of_generations = number_of_generations
 
     toolbox, vrp_instance = init_vrp(num_of_vehicles, atm_list)
 
