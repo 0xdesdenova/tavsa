@@ -68,7 +68,7 @@ def init_vrp(num_of_vehicles, atm_list):
 
 
 # Genetic Algorithm flow:
-def main(population_size, number_of_generations, num_of_vehicles, atm_list, date):
+def main(date, population_size, number_of_generations, num_of_vehicles, atm_list):
     population_size = population_size
     number_of_generations = number_of_generations
 
