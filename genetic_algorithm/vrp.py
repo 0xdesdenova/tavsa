@@ -135,7 +135,7 @@ class VehicleRoutingProblem:
                 counter += 1
         return totalDistance/counter
 
-    def plot_data(self, indices):
+    def plot_data(self, route, atm_list):
         """breaks the list of indices into separate routes and plot each route in a different color
 
         :param indices: A list of ordered indices describing the combined routes
@@ -143,19 +143,20 @@ class VehicleRoutingProblem:
         """
 
         # plot th atms of the underlying TSP:
-        plt.scatter(*zip(*self.tsp.locations), marker='.', color='red')
+        route_atms = [self.tsp.locations[i] for i in route]
+        plt.scatter(*zip(*route_atms), marker='.', color='red')
+
+        for index, location in enumerate(route_atms):
+            plt.annotate(atm_list[route[index]], (location[0], location[1]))
 
         # mark the depot location with a large 'X':
         d = self.tsp.locations[self.depotIndex]
         plt.plot(d[0], d[1], marker='x', markersize=10, color='green')
 
         # break the indices to separate routes and plot each route in a different color:
-        routes = self.get_routes(indices)
-        color = iter(plt.cm.rainbow(np.linspace(0, 1, self.numOfVehicles)))
-        for route in routes:
-            route = [self.depotIndex] + route + [self.depotIndex]
-            stops = [self.tsp.locations[i] for i in route]
-            plt.plot(*zip(*stops), linestyle='-', color=next(color))
+        route = [self.depotIndex] + route + [self.depotIndex]
+        stops = [self.tsp.locations[i] for i in route]
+        plt.plot(*zip(*stops), linestyle='-')
 
         return plt
 

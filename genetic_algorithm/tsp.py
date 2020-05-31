@@ -43,12 +43,26 @@ class TravelingSalesmanProblem:
             with open('genetic_algorithm/atm_data.txt') as json_file:
                 atm_data_object = json.load(json_file)
             self.locations = [[atm_data_object[atm]['latitude'], atm_data_object[atm]['longitude']] for atm in atm_list]
+            for atm in atm_list:
+                if atm_data_object[atm]['latitude'] == 0.0 or atm_data_object[atm]['longitude'] == 0.0:
+                    print(atm)
             for atm_origin in atm_list:
                 distance_vector = []
                 for atm_destination in atm_list:
-                    if atm_destination in atm_data_object[atm_origin]['distance_vector']:
-                        distance_vector.append(int(atm_data_object[atm_origin]['distance_vector'][atm_destination]))
-                    else: 
+                    if 'distance_vector' in atm_data_object[atm_origin]:
+                        if atm_destination in atm_data_object[atm_origin]['distance_vector']:
+                            distance_vector.append(int(atm_data_object[atm_origin]['distance_vector'][atm_destination]))
+                        else:
+                            delta_longitude = atm_data_object[atm_origin]['longitude'] - atm_data_object[atm_destination]['longitude']
+                            delta_latitude = atm_data_object[atm_origin]['latitude'] - atm_data_object[atm_destination]['latitude']
+                            a = (sin(delta_latitude / 2)) ** 2 + cos(atm_data_object[atm_destination]['latitude']) * cos(atm_data_object[atm_origin]['latitude']) * (sin(delta_longitude / 2)) ** 2
+                            c = 2 * atan2(sqrt(a), sqrt(1 - a))
+                            distance = 6373.0 * c
+
+                            # Se convirtió distancia en tiempo, y se agregó ventana de servicio.
+                            time = distance * 3 + atm_data_object[atm_origin]['service_time']
+                            distance_vector.append(time)
+                    else:
                         delta_longitude = atm_data_object[atm_origin]['longitude'] - atm_data_object[atm_destination]['longitude']
                         delta_latitude = atm_data_object[atm_origin]['latitude'] - atm_data_object[atm_destination]['latitude']
                         a = (sin(delta_latitude / 2)) ** 2 + cos(atm_data_object[atm_destination]['latitude']) * cos(atm_data_object[atm_origin]['latitude']) * (sin(delta_longitude / 2)) ** 2

@@ -1,10 +1,15 @@
-import os
+from django.http import StreamingHttpResponse
 from rest_framework import views, status, response
 from genetic_algorithm import solution
 
 
 # Create your views here.
+def solve(request):
+    yield 'Started'
+    yield solution.main(request.data['num_of_vehicles'], request.data['atm_list'], request.data['date'])
+    yield 'Finished'
+
+
 class Solve(views.APIView):
     def post(self, request):
-        data = solution.main(request.data['num_of_vehicles'], request.data['atm_list'])
-        return response.Response({'response': 'Success', 'data': data}, status=status.HTTP_200_OK)
+        return StreamingHttpResponse(solve(request))

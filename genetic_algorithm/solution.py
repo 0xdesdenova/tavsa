@@ -22,10 +22,10 @@ problem_name = "tavsa"
 depot_location = 0
 
 # Genetic Algorithm constants:
-population_size = 500
+population_size = 100
 crossover_probability = 0.9  # probability for crossover
 mutation_probability = 0.2  # probability for mutating an individual
-number_of_generations = 1000
+number_of_generations = 100
 hall_of_fame_size = 30
 
 
@@ -69,7 +69,7 @@ def init_vrp(num_of_vehicles, atm_list):
 
 
 # Genetic Algorithm flow:
-def main(num_of_vehicles, atm_list):
+def main(num_of_vehicles, atm_list, date):
 
     toolbox, vrp_instance = init_vrp(num_of_vehicles, atm_list)
 
@@ -91,32 +91,32 @@ def main(num_of_vehicles, atm_list):
 
     # print best individual info:
     best = hof.items[0]
+    routes = vrp_instance.get_routes(best)
     end = time.time()
     print("-- Execution Time = ", end - start)
     print("-- Best Ever Individual = ", best)
     print("-- Best Ever Fitness = ", best.fitness.values[0])
 
-    print("-- Route Breakdown = ", vrp_instance.get_routes(best))
+    print("-- Route Breakdown = ", routes)
     print("-- total distance = ", vrp_instance.get_total_distance(best))
     print("-- max distance = ", vrp_instance.get_max_distance(best))
 
-    # plot best solution:
-    plt.figure(1)
-    vrp_instance.plot_data(best)
-    plt.savefig('route.png')
-
     # plot statistics:
     min_fitness_values, mean_fitness_values = logbook.select("min", "avg")
-    plt.figure(2)
+    plt.figure(1)
     sns.set_style("whitegrid")
     plt.plot(min_fitness_values, color='red')
     plt.plot(mean_fitness_values, color='green')
     plt.xlabel('Generation')
     plt.ylabel('Min / Average Fitness')
     plt.title('Min and Average fitness over Generations')
+    plt.savefig(f'{date}_optimization.png')
 
-    # show both plots:
-    plt.savefig('optimization.png')
+    # plot best route:
+    for index, route in enumerate(routes):
+        plt.figure(index + 2)
+        vrp_instance.plot_data(route, atm_list)
+        plt.savefig(f'{date}_route_{index}.png')
 
     indexed_routes = vrp_instance.get_routes(best)
 
@@ -128,5 +128,5 @@ def main(num_of_vehicles, atm_list):
 
         routes.append(final_route)
 
-    return {'route': routes, 'total_time': vrp_instance.get_total_distance(best), 'image': 'http://127.0.0.1:8000/optimization.png'}
+    return {'route': routes, 'total_time': vrp_instance.get_total_distance(best)}
 
