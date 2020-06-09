@@ -24,8 +24,30 @@ depot_location = 0
 # Genetic Algorithm constants:
 
 crossover_probability = 0.9  # probability for crossover
-mutation_probability = 0.2  # probability for mutating an individual
+mutation_probability = 0.5  # probability for mutating an individual
 hall_of_fame_size = 30
+
+
+def mutShuffleFlipSegment(individual, indpb):
+    """Custom mutation algorithm
+    """
+    size = len(individual)
+    for i in range(size):
+        if random.random() < indpb:
+            swap_indx = random.randint(0, size - 2)
+            if swap_indx >= i:
+                swap_indx += 1
+            individual[i], individual[swap_indx] = \
+                individual[swap_indx], individual[i]
+
+    if random.random() < indpb:
+        endpoints = [random.randint(0, size - 1), random.randint(0, size - 1)]
+        endpoints.sort()
+        selected_indices = individual[endpoints[0]:endpoints[1]]
+        selected_indices.reverse()
+        individual[endpoints[0]:endpoints[1]] = selected_indices
+
+    return individual,
 
 
 def init_vrp(num_of_vehicles, atm_list):
@@ -61,14 +83,14 @@ def init_vrp(num_of_vehicles, atm_list):
 
     # Genetic operators:
     toolbox.register("select", tools.selTournament, tournsize=2)
-    toolbox.register("mutate", tools.mutShuffleIndexes, indpb=1.0 / len(vrp_instance))
-    toolbox.register("mate", tools.cxUniformPartialyMatched, indpb=2.0 / len(vrp_instance))
+    toolbox.register("mutate", mutShuffleFlipSegment, indpb=0.5)
+    toolbox.register("mate", tools.cxUniformPartialyMatched, indpb=0.08)
 
     return toolbox, vrp_instance
 
 
 # Genetic Algorithm flow:
-def main(date, population_size, number_of_generations, num_of_vehicles, atm_list):
+def main(date, population_size, number_of_generations, num_of_vehicles, atm_list, human_routes):
     population_size = population_size
     number_of_generations = number_of_generations
 
@@ -102,6 +124,7 @@ def main(date, population_size, number_of_generations, num_of_vehicles, atm_list
     print("-- total distance = ", vrp_instance.get_total_distance(best))
     print("-- max distance = ", vrp_instance.get_max_distance(best))
 
+
     # plot statistics:
     min_fitness_values, mean_fitness_values = logbook.select("min", "avg")
     plt.figure(1)
@@ -129,5 +152,15 @@ def main(date, population_size, number_of_generations, num_of_vehicles, atm_list
 
         routes.append(final_route)
 
-    return {'route': routes, 'total_time': vrp_instance.get_total_distance(best)}
+    numbers = []
+    count = 1
+    for human_route in human_routes:
+        temporary_route = []
+        for index in range(human_route):
+            temporary_route.append(count)
+            count += 1
+        numbers.append(temporary_route)
 
+    print(numbers)
+
+    return {'route': routes, 'total_time': vrp_instance.get_total_distance(best), 'human_time': vrp_instance.get_human_route_distance(numbers)}

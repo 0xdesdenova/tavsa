@@ -99,7 +99,18 @@ class VehicleRoutingProblem:
         totalDistance = 0
         for route in self.get_routes(indices):
             routeDistance = self.get_route_distance(route)
-            #print("- route distance = ", routeDistance)
+            totalDistance += routeDistance
+        return totalDistance
+
+    def get_human_route_distance(self, routes):
+        """Calculates the combined distance of the various paths described by the given indices
+
+        :param indices: a list of ordered atm indices and separator indices describing one or more paths.
+        :return: combined distance of the various paths described by the given indices
+        """
+        totalDistance = 0
+        for route in routes:
+            routeDistance = self.get_route_distance(route)
             totalDistance += routeDistance
         return totalDistance
 
